@@ -5,9 +5,9 @@ export const config = {
 export default function middleware(request) {
   const url = new URL(request.url)
 
-  // Allow static assets through without auth (js, css, images, fonts)
+  // Allow static assets through without auth
   if (/\.(js|css|png|jpg|jpeg|svg|ico|woff|woff2|ttf|map)$/.test(url.pathname)) {
-    return new Response(null, { status: 200, headers: { 'x-middleware-next': '1' } })
+    return
   }
 
   const authHeader = request.headers.get('Authorization') || ''
@@ -24,15 +24,15 @@ export default function middleware(request) {
       const validPass = process.env.AUTH_PASS
 
       if (user === validUser && pass === validPass) {
-        return new Response(null, { status: 200, headers: { 'x-middleware-next': '1' } })
+        return // allow through
       }
-    } catch {}
+    } catch (e) {}
   }
 
   return new Response('Access denied', {
     status: 401,
     headers: {
-      'WWW-Authenticate': 'Basic realm="D&E Group Dashboard", charset="UTF-8"',
+      'WWW-Authenticate': 'Basic realm="D&E Group Dashboard"',
       'Content-Type': 'text/plain',
     },
   })
