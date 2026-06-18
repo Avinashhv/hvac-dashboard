@@ -34,6 +34,7 @@ export default function App() {
   const [activeRole, setActiveRole] = useState(null)
   const [allData, setAllData] = useState(initAllProjects)
   const [extraProjects, setExtraProjects] = useState([])
+  const [archivedIds, setArchivedIds] = useState(new Set())
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   if (!loggedIn) {
@@ -55,6 +56,14 @@ export default function App() {
     setAllData(prev => ({ ...prev, [id]: roles }))
     setActiveProject(id)
     setActiveRole(null)
+  }
+
+  const handleArchiveProject = (id) => {
+    setArchivedIds(prev => { const n = new Set(prev); n.add(id); return n })
+    if (activeProject === id) { setActiveProject(null); setActiveRole(null) }
+  }
+  const handleUnarchiveProject = (id) => {
+    setArchivedIds(prev => { const n = new Set(prev); n.delete(id); return n })
   }
 
   const rolesData = activeProject ? allData[activeProject] : null
@@ -129,7 +138,7 @@ export default function App() {
 
         {/* Project list */}
         <div style={{ flex: 1, overflowY: 'auto' }}>
-          {allProjects.filter(p => !p.isTemplate).map(p => {
+          {allProjects.filter(p => !p.isTemplate && !archivedIds.has(p.id)).map(p => {
             const isActive = activeProject === p.id
             return (
               <div key={p.id}>
@@ -200,7 +209,13 @@ export default function App() {
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'auto', height: '100vh' }}>
         <div style={{ padding: activeRole ? '16px 20px' : '24px 32px', flex: 1, width: '100%', boxSizing: 'border-box' }}>
           {activeProject === null ? (
-            <ProjectsHome onSelect={(id) => { setActiveProject(id); setActiveRole(null) }} onAddProject={handleAddProject} />
+            <ProjectsHome
+              onSelect={(id) => { setActiveProject(id); setActiveRole(null) }}
+              onAddProject={handleAddProject}
+              archivedIds={archivedIds}
+              onArchive={handleArchiveProject}
+              onUnarchive={handleUnarchiveProject}
+            />
           ) : activeRole === null ? (
             <MainPage
               project={project}
