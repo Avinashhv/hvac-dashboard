@@ -15,8 +15,8 @@ const STATUSES = [
 const PRIORITIES = ['', 'Critical', 'High', 'Medium', 'Low']
 const PRIORITY_COLORS = { Critical: '#E2445C', High: '#FDAB3D', Medium: '#0096c7', Low: '#c4c4c4' }
 
-const GROUPS = ['To-Do', 'Waiting for Information', 'In Coordination', 'Complete']
-const GROUP_COLORS = { 'To-Do': '#7F77DD', 'Waiting for Information': '#FDAB3D', 'In Coordination': '#0096c7', 'Complete': '#00C875' }
+const GROUPS = ['To-Do', 'Waiting for Information', 'Completed no further action required']
+const GROUP_COLORS = { 'To-Do': '#7F77DD', 'Waiting for Information': '#FDAB3D', 'Completed no further action required': '#00C875' }
 
 function StatusPill({ value, onChange }) {
   const [open, setOpen] = useState(false)
@@ -143,6 +143,8 @@ export default function DraftingBoard({ cards, setCards }) {
       category: 'Drawing',
       owner: '',
       due: '',
+      timelineStart: '',
+      timelineEnd: '',
       priority: '',
       notes: '',
       draftStatus: 'Not Started',
@@ -164,6 +166,8 @@ export default function DraftingBoard({ cards, setCards }) {
     draftStatus: c.draftStatus || 'Not Started',
     notes: c.notes || '',
     priority: c.priority || '',
+    timelineStart: c.timelineStart || '',
+    timelineEnd: c.timelineEnd || '',
   }))
 
   const migrated = migrate(cards)
@@ -173,11 +177,11 @@ export default function DraftingBoard({ cards, setCards }) {
       {/* Header row */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '28px 1fr 90px 120px 90px 80px 80px 140px 28px',
+        gridTemplateColumns: '28px 1fr 90px 120px 90px 80px 150px 80px 140px 28px',
         gap: 0, borderBottom: '1.5px solid #e0dfd8',
         padding: '0 0 6px 0', marginBottom: 0,
       }}>
-        {['', 'Task', 'Category', 'Status', 'Owner', 'Due date', 'Priority', 'Notes', ''].map((h, i) => (
+        {['', 'Task', 'Category', 'Status', 'Owner', 'Due date', 'Timeline', 'Priority', 'Notes', ''].map((h, i) => (
           <div key={i} style={{ fontSize: 11, fontWeight: 500, color: '#aaa', padding: '0 8px' }}>{h}</div>
         ))}
       </div>
@@ -206,7 +210,7 @@ export default function DraftingBoard({ cards, setCards }) {
                 key={card.id}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '28px 1fr 90px 120px 90px 80px 80px 140px 28px',
+                  gridTemplateColumns: '28px 1fr 90px 120px 90px 80px 150px 80px 140px 28px',
                   alignItems: 'center', gap: 0,
                   borderBottom: '0.5px solid #f0efe9',
                   background: idx % 2 === 0 ? 'white' : '#fafaf8',
@@ -241,6 +245,13 @@ export default function DraftingBoard({ cards, setCards }) {
                 {/* Due date */}
                 <div style={{ padding: '6px 8px' }}>
                   <InlineEdit value={card.due} onChange={v => update(card.id, 'due', v)} placeholder="—" />
+                </div>
+
+                {/* Timeline */}
+                <div style={{ padding: '6px 8px', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <InlineEdit value={card.timelineStart} onChange={v => update(card.id, 'timelineStart', v)} placeholder="Start" />
+                  <span style={{ color: '#ccc', fontSize: 10 }}>→</span>
+                  <InlineEdit value={card.timelineEnd} onChange={v => update(card.id, 'timelineEnd', v)} placeholder="End" />
                 </div>
 
                 {/* Priority */}
