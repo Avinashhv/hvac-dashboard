@@ -54,6 +54,7 @@ export default function App() {
           cards={rolesData[activeRole].cards}
           setCards={setCards(activeRole)}
           onBack={() => setActiveRole(null)}
+          projectName={project?.name}
         />
       )}
     </div>

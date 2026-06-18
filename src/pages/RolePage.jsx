@@ -1,8 +1,8 @@
-import { useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import KanbanBoard from '../components/KanbanBoard'
+import DraftingBoard from '../components/DraftingBoard'
 
-export default function RolePage({ roleKey, roleData, onBack, cards, setCards }) {
+export default function RolePage({ roleKey, roleData, onBack, cards, setCards, projectName }) {
   const { label, owner, color, textColor, metrics, progress } = roleData
 
   return (
@@ -26,7 +26,7 @@ export default function RolePage({ roleKey, roleData, onBack, cards, setCards })
           marginLeft: 'auto', padding: '3px 12px', borderRadius: 20,
           fontSize: 11, fontWeight: 500, background: color, color: textColor,
         }}>
-          V&A Broadbeach
+          {projectName}
         </span>
       </div>
 
@@ -41,15 +41,17 @@ export default function RolePage({ roleKey, roleData, onBack, cards, setCards })
         ))}
       </div>
 
-      {/* Board */}
-      <KanbanBoard cards={cards} setCards={setCards} />
+      {/* Board — Monday-style for drafting, kanban for others */}
+      {roleKey === 'draft'
+        ? <DraftingBoard cards={cards} setCards={setCards} />
+        : <KanbanBoard cards={cards} setCards={setCards} />
+      }
 
       {/* Progress bars */}
-      {progress && progress.length > 0 && (
+      {roleKey !== 'draft' && progress && progress.length > 0 && (
         <div style={{ marginTop: 18 }}>
           <div style={{ fontSize: 12, fontWeight: 500, color: '#888', marginBottom: 10 }}>
-            {roleKey === 'eng' ? 'Hours tracking (as at 1 Jun 2026)' :
-             roleKey === 'draft' ? 'Drawing progress by zone' :
+            {roleKey === 'eng' ? 'Hours tracking' :
              roleKey === 'site' ? 'WBS — installation progress' :
              'D&C program milestones'}
           </div>
