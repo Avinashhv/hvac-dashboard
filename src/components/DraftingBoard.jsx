@@ -145,6 +145,8 @@ export default function DraftingBoard({ cards, setCards }) {
   const [activeCard, setActiveCard] = useState(null)
   const [selected, setSelected] = useState(new Set())
   const [moveOpen, setMoveOpen] = useState(false)
+  const [dragId, setDragId] = useState(null)
+  const [dragOver, setDragOver] = useState(null)
   const moveRef = useRef()
 
   useEffect(() => {
@@ -187,6 +189,20 @@ export default function DraftingBoard({ cards, setCards }) {
     setCards(prev => prev.map(c => selected.has(c.id) ? { ...c, group } : c))
     setMoveOpen(false)
     clearSelected()
+  }
+
+  const onDragStart = (e, id) => {
+    setDragId(id)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const onDropGroup = (e, group) => {
+    e.preventDefault()
+    if (dragId) {
+      setCards(prev => prev.map(c => c.id === dragId ? { ...c, group } : c))
+      setDragId(null)
+    }
+    setDragOver(null)
   }
 
   const addRow = (group) => {
@@ -308,12 +324,22 @@ export default function DraftingBoard({ cards, setCards }) {
       {GROUPS.map(group => {
         const groupCards = migrated.filter(c => c.group === group)
         return (
-          <div key={group} style={{ marginBottom: 24 }}>
+          <div
+            key={group}
+            style={{ marginBottom: 24 }}
+            onDragOver={e => { e.preventDefault(); setDragOver(group) }}
+            onDragLeave={() => setDragOver(null)}
+            onDrop={e => onDropGroup(e, group)}
+          >
             {/* Group header */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
-              padding: '10px 0 6px 0', borderBottom: `2px solid ${GROUP_COLORS[group]}`,
+              padding: '10px 0 6px 0',
+              borderBottom: `2px solid ${GROUP_COLORS[group]}`,
               marginBottom: 0,
+              background: dragOver === group && dragId ? `${GROUP_COLORS[group]}18` : 'transparent',
+              borderRadius: dragOver === group && dragId ? '6px 6px 0 0' : 0,
+              transition: 'background 0.15s',
             }}>
               <span style={{
                 width: 10, height: 10, borderRadius: 2,
@@ -321,22 +347,30 @@ export default function DraftingBoard({ cards, setCards }) {
               }} />
               <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{group}</span>
               <span style={{ fontSize: 11, color: '#aaa', marginLeft: 4 }}>{groupCards.length}</span>
+              {dragOver === group && dragId && (
+                <span style={{ fontSize: 11, color: GROUP_COLORS[group], marginLeft: 8, fontWeight: 600 }}>Drop here</span>
+              )}
             </div>
 
             {/* Rows */}
             {groupCards.map((card, idx) => (
               <div
                 key={card.id}
+                draggable
+                onDragStart={e => onDragStart(e, card.id)}
+                onDragEnd={() => { setDragId(null); setDragOver(null) }}
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '28px 28px 2fr 80px 140px 100px 100px 2fr 110px 170px 28px',
                   alignItems: 'center', gap: 0,
                   borderBottom: '0.5px solid #f0efe9',
-                  background: selected.has(card.id) ? '#eeeeff' : idx % 2 === 0 ? 'white' : '#fafaf8',
+                  background: dragId === card.id ? '#e8e8ff' : selected.has(card.id) ? '#eeeeff' : idx % 2 === 0 ? 'white' : '#fafaf8',
                   minHeight: 38,
+                  opacity: dragId === card.id ? 0.5 : 1,
+                  cursor: 'grab',
                 }}
-                onMouseEnter={e => { if (!selected.has(card.id)) e.currentTarget.style.background = '#f5f4f0' }}
-                onMouseLeave={e => { if (!selected.has(card.id)) e.currentTarget.style.background = idx % 2 === 0 ? 'white' : '#fafaf8' }}
+                onMouseEnter={e => { if (!selected.has(card.id) && dragId !== card.id) e.currentTarget.style.background = '#f5f4f0' }}
+                onMouseLeave={e => { if (!selected.has(card.id) && dragId !== card.id) e.currentTarget.style.background = idx % 2 === 0 ? 'white' : '#fafaf8' }}
               >
                 {/* colour bar */}
                 <div style={{ width: 4, height: '100%', background: GROUP_COLORS[group], borderRadius: '2px 0 0 2px', alignSelf: 'stretch' }} />
