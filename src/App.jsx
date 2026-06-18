@@ -4,14 +4,24 @@ import MainPage from './pages/MainPage'
 import RolePage from './pages/RolePage'
 import LoginPage from './pages/LoginPage'
 import { INITIAL_DATA } from './lib/data'
-import { getDefaultRoles } from './lib/defaultRoles'
+import { getDefaultRoles, TEMPLATE_DRAFT_CARDS } from './lib/defaultRoles'
 import { PROJECTS } from './lib/projects'
 import { ChevronLeft, ChevronRight, LayoutGrid, Home, LogOut } from 'lucide-react'
 
 function initAllProjects() {
   const all = {}
   PROJECTS.forEach(p => {
-    all[p.id] = p.id === 'va' ? INITIAL_DATA : getDefaultRoles(p.name)
+    if (p.id === 'va') {
+      all[p.id] = INITIAL_DATA
+    } else if (p.id === 'test') {
+      // Test project is the template — shows the canonical task list with stable IDs
+      const roles = getDefaultRoles(p.name)
+      roles.draft.cards = TEMPLATE_DRAFT_CARDS
+      all[p.id] = roles
+    } else {
+      // All other projects get a fresh copy of the template with unique IDs
+      all[p.id] = getDefaultRoles(p.name)
+    }
   })
   return all
 }
