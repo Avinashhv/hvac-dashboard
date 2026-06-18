@@ -159,7 +159,7 @@ export default function App() {
       </div>}
 
       {/* ── Main content ── */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'auto', height: '100vh' }}>
         <div style={{ padding: activeRole ? '16px 20px' : '24px 32px', flex: 1, width: '100%', boxSizing: 'border-box' }}>
           {activeProject === null ? (
             <ProjectsHome onSelect={(id) => { setActiveProject(id); setActiveRole(null) }} />
