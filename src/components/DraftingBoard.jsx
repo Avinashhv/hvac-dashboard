@@ -177,7 +177,7 @@ export default function DraftingBoard({ cards, setCards }) {
       {/* Header row */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '28px 1fr 60px 130px 90px 90px 160px 100px 150px 28px',
+        gridTemplateColumns: '28px 2fr 80px 140px 100px 100px 2fr 110px 170px 28px',
         gap: 0, borderBottom: '1.5px solid #e0dfd8',
         padding: '0 0 6px 0', marginBottom: 0,
       }}>
@@ -210,7 +210,7 @@ export default function DraftingBoard({ cards, setCards }) {
                 key={card.id}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '28px 1fr 60px 130px 90px 90px 160px 100px 150px 28px',
+                  gridTemplateColumns: '28px 2fr 80px 140px 100px 100px 2fr 110px 170px 28px',
                   alignItems: 'center', gap: 0,
                   borderBottom: '0.5px solid #f0efe9',
                   background: idx % 2 === 0 ? 'white' : '#fafaf8',
