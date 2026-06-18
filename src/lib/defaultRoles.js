@@ -1,0 +1,73 @@
+export function getDefaultRoles(projectName) {
+  return {
+    pm: {
+      label: 'Project Manager',
+      owner: 'PM',
+      desc: 'D&C program, procurement, programme',
+      color: '#E6F1FB',
+      textColor: '#0C447C',
+      iconColor: '#185FA5',
+      metrics: [
+        { label: 'Programme', value: '—', sub: 'Not set yet' },
+        { label: 'Procurement open', value: '—', sub: 'Not set yet' },
+        { label: 'Open RFIs', value: '—', sub: 'Not set yet' },
+        { label: 'Budget', value: '—', sub: 'Not set yet' },
+      ],
+      progress: [
+        { label: 'Design', pct: 0, color: '#7F77DD' },
+        { label: 'Procurement', pct: 0, color: '#378ADD' },
+        { label: 'Installation', pct: 0, color: '#1D9E75' },
+        { label: 'Commissioning', pct: 0, color: '#EF9F27' },
+      ],
+      cards: [],
+    },
+    eng: {
+      label: 'Engineering',
+      owner: 'ENG',
+      desc: 'Calcs, submittals, schematics',
+      color: '#EEEDFE',
+      textColor: '#3C3489',
+      iconColor: '#534AB7',
+      metrics: [
+        { label: 'Hours used', value: '—', sub: 'Not set yet' },
+        { label: 'Hrs to complete', value: '—', sub: 'Not set yet' },
+        { label: 'Tech subs open', value: '—', sub: 'Not set yet' },
+        { label: 'Schematics', value: '—', sub: 'Not set yet' },
+      ],
+      progress: [],
+      cards: [],
+    },
+    draft: {
+      label: 'Drafting',
+      owner: 'DFT',
+      desc: 'DSR, IFC drawings, coordination',
+      color: '#EAF3DE',
+      textColor: '#27500A',
+      iconColor: '#3B6D11',
+      metrics: [
+        { label: 'Hours used', value: '—', sub: 'Not set yet' },
+        { label: 'Hrs to complete', value: '—', sub: 'Not set yet' },
+        { label: 'In coordination', value: '—', sub: 'Not set yet' },
+        { label: 'DRS status', value: '—', sub: 'Not set yet' },
+      ],
+      progress: [],
+      cards: [],
+    },
+    site: {
+      label: 'Site',
+      owner: 'SITE',
+      desc: 'Labour, WBS, QA, ITPs',
+      color: '#FAECE7',
+      textColor: '#712B13',
+      iconColor: '#993C1D',
+      metrics: [
+        { label: 'Site start', value: '—', sub: 'Not set yet' },
+        { label: 'WBS dates', value: '—', sub: 'Not set yet' },
+        { label: 'ITPs submitted', value: '—', sub: 'Not set yet' },
+        { label: 'Pre-fab status', value: '—', sub: 'Not set yet' },
+      ],
+      progress: [],
+      cards: [],
+    },
+  }
+}
