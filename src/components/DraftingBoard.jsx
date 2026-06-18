@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
-import { Plus, X, ChevronDown } from 'lucide-react'
+import { Plus, X, ChevronDown, Copy, Trash2, ArrowRight } from 'lucide-react'
 import CategoryBadge from './CategoryBadge'
+import TaskPanel from './TaskPanel'
 
 const STATUSES = [
   { label: 'Not Started',    bg: '#c4c4c4', text: '#444' },
@@ -17,6 +18,12 @@ const PRIORITY_COLORS = { Critical: '#E2445C', High: '#FDAB3D', Medium: '#0096c7
 
 const GROUPS = ['To-Do', 'Waiting for Information', 'Completed no further action required']
 const GROUP_COLORS = { 'To-Do': '#7F77DD', 'Waiting for Information': '#FDAB3D', 'Completed no further action required': '#00C875' }
+
+const actionBtn = {
+  background: 'rgba(255,255,255,0.08)', border: '0.5px solid rgba(255,255,255,0.15)',
+  borderRadius: 7, color: 'white', cursor: 'pointer', fontSize: 12, fontWeight: 500,
+  padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 5,
+}
 
 function StatusPill({ value, onChange }) {
   const [open, setOpen] = useState(false)
@@ -135,6 +142,53 @@ function InlineEdit({ value, onChange, placeholder = '' }) {
 }
 
 export default function DraftingBoard({ cards, setCards }) {
+  const [activeCard, setActiveCard] = useState(null)
+  const [selected, setSelected] = useState(new Set())
+  const [moveOpen, setMoveOpen] = useState(false)
+  const moveRef = useRef()
+
+  useEffect(() => {
+    const handler = (e) => { if (moveRef.current && !moveRef.current.contains(e.target)) setMoveOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const openPanel = (card) => setActiveCard(card)
+  const closePanel = () => setActiveCard(null)
+
+  const updateCardFull = (updated) => {
+    setCards(prev => prev.map(c => c.id === updated.id ? updated : c))
+    setActiveCard(updated)
+  }
+
+  const toggleSelect = (id) => {
+    setSelected(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  const clearSelected = () => setSelected(new Set())
+
+  const duplicateSelected = () => {
+    const toDup = cards.filter(c => selected.has(c.id))
+    const duped = toDup.map(c => ({ ...c, id: Date.now() + Math.random(), title: c.title + ' (copy)', checked: false }))
+    setCards(prev => [...prev, ...duped])
+    clearSelected()
+  }
+
+  const deleteSelected = () => {
+    setCards(prev => prev.filter(c => !selected.has(c.id)))
+    clearSelected()
+  }
+
+  const moveSelected = (group) => {
+    setCards(prev => prev.map(c => selected.has(c.id) ? { ...c, group } : c))
+    setMoveOpen(false)
+    clearSelected()
+  }
+
   const addRow = (group) => {
     const newCard = {
       id: Date.now(),
@@ -187,6 +241,69 @@ export default function DraftingBoard({ cards, setCards }) {
         ))}
       </div>
 
+      {/* Bottom action bar */}
+      {selected.size > 0 && (
+        <div style={{
+          position: 'fixed', bottom: 28, left: '50%', transform: 'translateX(-50%)',
+          background: '#1a1a2e', color: 'white', borderRadius: 12,
+          padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 6,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.28)', zIndex: 300, whiteSpace: 'nowrap',
+        }}>
+          <div style={{
+            background: '#7F77DD', borderRadius: '50%',
+            width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 11, fontWeight: 700, marginRight: 6,
+          }}>
+            {selected.size}
+          </div>
+          <span style={{ fontSize: 13, fontWeight: 500, marginRight: 16 }}>
+            {selected.size === 1 ? 'Task selected' : `${selected.size} tasks selected`}
+          </span>
+
+          <button onClick={duplicateSelected} style={actionBtn}>
+            <Copy size={14} /> Duplicate
+          </button>
+
+          <div ref={moveRef} style={{ position: 'relative' }}>
+            <button onClick={() => setMoveOpen(o => !o)} style={actionBtn}>
+              <ArrowRight size={14} /> Move to
+            </button>
+            {moveOpen && (
+              <div style={{
+                position: 'absolute', bottom: '110%', left: 0,
+                background: 'white', border: '0.5px solid #e0dfd8', borderRadius: 8,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.15)', padding: 6, minWidth: 240,
+              }}>
+                {GROUPS.map(g => (
+                  <button key={g} onClick={() => moveSelected(g)} style={{
+                    display: 'block', width: '100%', textAlign: 'left', background: 'none',
+                    border: 'none', padding: '7px 12px', fontSize: 12, cursor: 'pointer',
+                    color: '#1a1a1a', borderRadius: 4,
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#f5f4f0'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                  >
+                    <span style={{ width: 10, height: 10, borderRadius: 2, background: GROUP_COLORS[g], display: 'inline-block', marginRight: 8, verticalAlign: 'middle' }} />
+                    {g}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button onClick={deleteSelected} style={{ ...actionBtn, color: '#ff7575' }}>
+            <Trash2 size={14} /> Delete
+          </button>
+
+          <button onClick={clearSelected} style={{
+            background: 'none', border: 'none', cursor: 'pointer', color: '#888',
+            marginLeft: 8, padding: 4, display: 'flex', alignItems: 'center',
+          }}>
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
       {GROUPS.map(group => {
         const groupCards = migrated.filter(c => c.group === group)
         return (
@@ -214,11 +331,11 @@ export default function DraftingBoard({ cards, setCards }) {
                   gridTemplateColumns: '28px 28px 2fr 80px 140px 100px 100px 2fr 110px 170px 28px',
                   alignItems: 'center', gap: 0,
                   borderBottom: '0.5px solid #f0efe9',
-                  background: idx % 2 === 0 ? 'white' : '#fafaf8',
+                  background: selected.has(card.id) ? '#eeeeff' : idx % 2 === 0 ? 'white' : '#fafaf8',
                   minHeight: 38,
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = '#f5f4f0'}
-                onMouseLeave={e => e.currentTarget.style.background = idx % 2 === 0 ? 'white' : '#fafaf8'}
+                onMouseEnter={e => { if (!selected.has(card.id)) e.currentTarget.style.background = '#f5f4f0' }}
+                onMouseLeave={e => { if (!selected.has(card.id)) e.currentTarget.style.background = idx % 2 === 0 ? 'white' : '#fafaf8' }}
               >
                 {/* colour bar */}
                 <div style={{ width: 4, height: '100%', background: GROUP_COLORS[group], borderRadius: '2px 0 0 2px', alignSelf: 'stretch' }} />
@@ -227,8 +344,8 @@ export default function DraftingBoard({ cards, setCards }) {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px' }}>
                   <input
                     type="checkbox"
-                    checked={!!card.checked}
-                    onChange={e => update(card.id, 'checked', e.target.checked)}
+                    checked={selected.has(card.id)}
+                    onChange={() => toggleSelect(card.id)}
                     style={{
                       width: 15, height: 15, cursor: 'pointer', accentColor: '#7F77DD',
                       borderRadius: 3, flexShrink: 0,
