@@ -389,8 +389,23 @@ export default function DraftingBoard({ cards, setCards }) {
                 </div>
 
                 {/* Task title */}
-                <div style={{ padding: '6px 8px', overflow: 'hidden' }}>
+                <div style={{ padding: '6px 8px', overflow: 'hidden', display: 'flex', alignItems: 'center', gap: 6 }}>
                   <InlineEdit value={card.title} onChange={v => update(card.id, 'title', v)} placeholder="Task name..." />
+                  <button
+                    onClick={e => { e.stopPropagation(); openPanel(migrated.find(c => c.id === card.id)) }}
+                    title="Open updates"
+                    style={{
+                      flexShrink: 0, background: 'none', border: '0.5px solid #e0dfd8',
+                      borderRadius: 5, cursor: 'pointer', padding: '2px 5px',
+                      fontSize: 10, color: '#aaa', display: 'flex', alignItems: 'center', gap: 3,
+                      opacity: 0,
+                    }}
+                    className="open-panel-btn"
+                    onMouseEnter={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.color = '#7F77DD'; e.currentTarget.style.borderColor = '#7F77DD' }}
+                    onMouseLeave={e => { e.currentTarget.style.opacity = 0 }}
+                  >
+                    💬 {(card.updates || []).length > 0 ? (card.updates || []).length : ''}
+                  </button>
                 </div>
 
                 {/* Owner */}
@@ -463,5 +478,21 @@ export default function DraftingBoard({ cards, setCards }) {
         )
       })}
     </div>
+
+    {/* Task panel slide-in */}
+    {activeCard && (
+      <>
+        <div
+          onClick={closePanel}
+          style={{ position: 'fixed', inset: 0, zIndex: 199, background: 'rgba(0,0,0,0.15)' }}
+        />
+        <TaskPanel
+          card={migrated.find(c => c.id === activeCard.id) || activeCard}
+          onClose={closePanel}
+          onUpdateCard={updateCardFull}
+          currentUser="AH"
+        />
+      </>
+    )}
   )
 }
