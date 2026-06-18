@@ -44,11 +44,13 @@ export default function App() {
 
   const SIDEBAR_W = sidebarOpen ? 220 : 52
 
+  const showSidebar = activeProject !== null && activeRole !== null
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' }}>
 
-      {/* ── Sidebar ── */}
-      <div style={{
+      {/* ── Sidebar — only when inside a role board ── */}
+      {showSidebar && <div style={{
         width: SIDEBAR_W, flexShrink: 0, background: '#1f1f2e',
         display: 'flex', flexDirection: 'column',
         position: 'sticky', top: 0, height: '100vh',
@@ -154,7 +156,7 @@ export default function App() {
             Mechanical Services — D&amp;E Group
           </div>
         )}
-      </div>
+      </div>}
 
       {/* ── Main content ── */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
