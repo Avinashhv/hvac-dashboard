@@ -177,11 +177,11 @@ export default function DraftingBoard({ cards, setCards }) {
       {/* Header row */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '28px 1fr 90px 120px 90px 80px 150px 80px 140px 28px',
+        gridTemplateColumns: '28px 1fr 60px 130px 90px 90px 160px 100px 150px 28px',
         gap: 0, borderBottom: '1.5px solid #e0dfd8',
         padding: '0 0 6px 0', marginBottom: 0,
       }}>
-        {['', 'Task', 'Category', 'Status', 'Owner', 'Due date', 'Timeline', 'Priority', 'Notes', ''].map((h, i) => (
+        {['', 'Task', 'Owner', 'Status', 'Due date', 'Priority', 'Notes', 'Category', 'Timeline', ''].map((h, i) => (
           <div key={i} style={{ fontSize: 11, fontWeight: 500, color: '#aaa', padding: '0 8px' }}>{h}</div>
         ))}
       </div>
@@ -210,7 +210,7 @@ export default function DraftingBoard({ cards, setCards }) {
                 key={card.id}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '28px 1fr 90px 120px 90px 80px 150px 80px 140px 28px',
+                  gridTemplateColumns: '28px 1fr 60px 130px 90px 90px 160px 100px 150px 28px',
                   alignItems: 'center', gap: 0,
                   borderBottom: '0.5px solid #f0efe9',
                   background: idx % 2 === 0 ? 'white' : '#fafaf8',
@@ -227,9 +227,9 @@ export default function DraftingBoard({ cards, setCards }) {
                   <InlineEdit value={card.title} onChange={v => update(card.id, 'title', v)} placeholder="Task name..." />
                 </div>
 
-                {/* Category */}
+                {/* Owner */}
                 <div style={{ padding: '6px 8px' }}>
-                  <CategoryBadge category={card.category} />
+                  <InlineEdit value={card.owner} onChange={v => update(card.id, 'owner', v)} placeholder="—" />
                 </div>
 
                 {/* Status */}
@@ -237,21 +237,9 @@ export default function DraftingBoard({ cards, setCards }) {
                   <StatusPill value={card.draftStatus} onChange={v => update(card.id, 'draftStatus', v)} />
                 </div>
 
-                {/* Owner */}
-                <div style={{ padding: '6px 8px' }}>
-                  <InlineEdit value={card.owner} onChange={v => update(card.id, 'owner', v)} placeholder="—" />
-                </div>
-
                 {/* Due date */}
                 <div style={{ padding: '6px 8px' }}>
                   <InlineEdit value={card.due} onChange={v => update(card.id, 'due', v)} placeholder="—" />
-                </div>
-
-                {/* Timeline */}
-                <div style={{ padding: '6px 8px', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <InlineEdit value={card.timelineStart} onChange={v => update(card.id, 'timelineStart', v)} placeholder="Start" />
-                  <span style={{ color: '#ccc', fontSize: 10 }}>→</span>
-                  <InlineEdit value={card.timelineEnd} onChange={v => update(card.id, 'timelineEnd', v)} placeholder="End" />
                 </div>
 
                 {/* Priority */}
@@ -262,6 +250,18 @@ export default function DraftingBoard({ cards, setCards }) {
                 {/* Notes */}
                 <div style={{ padding: '6px 8px' }}>
                   <InlineEdit value={card.notes} onChange={v => update(card.id, 'notes', v)} placeholder="Add note..." />
+                </div>
+
+                {/* Category */}
+                <div style={{ padding: '6px 8px' }}>
+                  <CategoryBadge category={card.category} />
+                </div>
+
+                {/* Timeline */}
+                <div style={{ padding: '6px 8px', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <InlineEdit value={card.timelineStart} onChange={v => update(card.id, 'timelineStart', v)} placeholder="Start" />
+                  <span style={{ color: '#ccc', fontSize: 10 }}>→</span>
+                  <InlineEdit value={card.timelineEnd} onChange={v => update(card.id, 'timelineEnd', v)} placeholder="End" />
                 </div>
 
                 {/* Delete */}
