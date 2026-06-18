@@ -168,6 +168,7 @@ export default function DraftingBoard({ cards, setCards }) {
     priority: c.priority || '',
     timelineStart: c.timelineStart || '',
     timelineEnd: c.timelineEnd || '',
+    checked: c.checked || false,
   }))
 
   const migrated = migrate(cards)
@@ -177,11 +178,11 @@ export default function DraftingBoard({ cards, setCards }) {
       {/* Header row */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '28px 2fr 80px 140px 100px 100px 2fr 110px 170px 28px',
+        gridTemplateColumns: '28px 28px 2fr 80px 140px 100px 100px 2fr 110px 170px 28px',
         gap: 0, borderBottom: '1.5px solid #e0dfd8',
         padding: '0 0 6px 0', marginBottom: 0,
       }}>
-        {['', 'Task', 'Owner', 'Status', 'Due date', 'Priority', 'Notes', 'Category', 'Timeline', ''].map((h, i) => (
+        {['', '', 'Task', 'Owner', 'Status', 'Due date', 'Priority', 'Notes', 'Category', 'Timeline', ''].map((h, i) => (
           <div key={i} style={{ fontSize: 11, fontWeight: 500, color: '#aaa', padding: '0 8px' }}>{h}</div>
         ))}
       </div>
@@ -210,7 +211,7 @@ export default function DraftingBoard({ cards, setCards }) {
                 key={card.id}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '28px 2fr 80px 140px 100px 100px 2fr 110px 170px 28px',
+                  gridTemplateColumns: '28px 28px 2fr 80px 140px 100px 100px 2fr 110px 170px 28px',
                   alignItems: 'center', gap: 0,
                   borderBottom: '0.5px solid #f0efe9',
                   background: idx % 2 === 0 ? 'white' : '#fafaf8',
@@ -221,6 +222,19 @@ export default function DraftingBoard({ cards, setCards }) {
               >
                 {/* colour bar */}
                 <div style={{ width: 4, height: '100%', background: GROUP_COLORS[group], borderRadius: '2px 0 0 2px', alignSelf: 'stretch' }} />
+
+                {/* Checkbox */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px' }}>
+                  <input
+                    type="checkbox"
+                    checked={!!card.checked}
+                    onChange={e => update(card.id, 'checked', e.target.checked)}
+                    style={{
+                      width: 15, height: 15, cursor: 'pointer', accentColor: '#7F77DD',
+                      borderRadius: 3, flexShrink: 0,
+                    }}
+                  />
+                </div>
 
                 {/* Task title */}
                 <div style={{ padding: '6px 8px', overflow: 'hidden' }}>
