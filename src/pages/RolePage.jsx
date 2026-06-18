@@ -1,6 +1,7 @@
 import { ArrowLeft } from 'lucide-react'
 import KanbanBoard from '../components/KanbanBoard'
 import DraftingBoard from '../components/DraftingBoard'
+import ProgressChart from '../components/ProgressChart'
 
 export default function RolePage({ roleKey, roleData, onBack, cards, setCards, projectName }) {
   const { label, owner, color, textColor, metrics, progress } = roleData
@@ -44,6 +45,7 @@ export default function RolePage({ roleKey, roleData, onBack, cards, setCards, p
       {/* Board */}
       {roleKey === 'draft' ? (
         <>
+          <ProgressChart cards={cards} />
           <DraftingBoard cards={cards} setCards={setCards} />
           <div style={{ borderTop: '0.5px solid #e0dfd8', margin: '28px 0 16px' }}>
             <div style={{ fontSize: 12, fontWeight: 500, color: '#aaa', marginBottom: 14, marginTop: 16 }}>
