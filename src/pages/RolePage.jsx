@@ -41,11 +41,20 @@ export default function RolePage({ roleKey, roleData, onBack, cards, setCards, p
         ))}
       </div>
 
-      {/* Board — Monday-style for drafting, kanban for others */}
-      {roleKey === 'draft'
-        ? <DraftingBoard cards={cards} setCards={setCards} />
-        : <KanbanBoard cards={cards} setCards={setCards} />
-      }
+      {/* Board */}
+      {roleKey === 'draft' ? (
+        <>
+          <DraftingBoard cards={cards} setCards={setCards} />
+          <div style={{ borderTop: '0.5px solid #e0dfd8', margin: '28px 0 16px' }}>
+            <div style={{ fontSize: 12, fontWeight: 500, color: '#aaa', marginBottom: 14, marginTop: 16 }}>
+              KANBAN VIEW
+            </div>
+            <KanbanBoard cards={cards} setCards={setCards} />
+          </div>
+        </>
+      ) : (
+        <KanbanBoard cards={cards} setCards={setCards} />
+      )}
 
       {/* Progress bars */}
       {roleKey !== 'draft' && progress && progress.length > 0 && (
