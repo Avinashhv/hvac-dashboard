@@ -268,8 +268,68 @@ export default function DraftingBoard({ cards, setCards }) {
   const allColDefs = { ...COL_DEF, ...customCols }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
+    <div>
+      {/* ── Global sticky header (outside overflow so sticky works) ── */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: gridCols,
+        position: 'sticky', top: 0, zIndex: 20,
+        background: 'white', borderBottom: '1.5px solid #e0dfd8',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+      }}>
+        <div /><div />
+        {colOrder.map((key, ci) => (
+          <div key={key}
+            draggable
+            onDragStart={e => { e.stopPropagation(); onColDragStart(e, ci) }}
+            onDragOver={e => { e.stopPropagation(); onColDragOver(e, ci) }}
+            onDrop={e => { e.stopPropagation(); onColDrop(e, ci) }}
+            onDragEnd={() => { setDragColIdx(null); setDragColOverIdx(null) }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 4, padding: '7px 8px',
+              cursor: 'grab', userSelect: 'none', borderRight: '0.5px solid #e8e7e0',
+              borderLeft: dragColOverIdx === ci && dragColIdx !== ci ? '2px solid #7F77DD' : '2px solid transparent',
+              background: dragColIdx === ci ? '#eeeeff' : 'transparent',
+            }}>
+            <GripVertical size={10} color="#ccc" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+              {allColDefs[key]?.label || key}
+            </span>
+          </div>
+        ))}
+        {/* + Add column */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }} ref={addColRef}>
+          <button onClick={() => setAddColOpen(o => !o)} title="Add column"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', display: 'flex', alignItems: 'center', padding: 4, borderRadius: 4 }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#eee'; e.currentTarget.style.color = '#7F77DD' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#aaa' }}>
+            <Plus size={14} />
+          </button>
+          {addColOpen && (
+            <div style={{ position: 'fixed', zIndex: 500, background: 'white', border: '0.5px solid #e0dfd8', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.18)', padding: 16, width: 320, top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f5f4f0', borderRadius: 8, padding: '7px 12px', marginBottom: 14 }}>
+                <span style={{ fontSize: 14, color: '#bbb' }}>🔍</span>
+                <input autoFocus value={colSearch} onChange={e => setColSearch(e.target.value)} placeholder="Search or describe your column"
+                  style={{ border: 'none', background: 'none', outline: 'none', fontSize: 13, flex: 1, color: '#1a1a1a' }} />
+              </div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#aaa', letterSpacing: '0.08em', marginBottom: 8, textTransform: 'uppercase' }}>Column types</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                {COL_TYPES.filter(t => !colSearch || t.label.toLowerCase().includes(colSearch.toLowerCase())).map(t => (
+                  <button key={t.type} onClick={() => addColumn(t.type)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '0.5px solid #e0dfd8', borderRadius: 8, cursor: 'pointer', background: 'white', textAlign: 'left' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#f5f4f0'; e.currentTarget.style.borderColor = t.color }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#e0dfd8' }}>
+                    <div style={{ width: 30, height: 30, borderRadius: 7, background: `${t.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: t.color, fontWeight: 700, flexShrink: 0 }}>{t.icon}</div>
+                    <div><div style={{ fontSize: 12, fontWeight: 600, color: '#1a1a1a' }}>{t.label}</div><div style={{ fontSize: 10, color: '#aaa' }}>{t.desc}</div></div>
+                  </button>
+                ))}
+              </div>
+              <button onClick={() => setAddColOpen(false)} style={{ position: 'absolute', top: 10, right: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#bbb' }}><X size={14} /></button>
+            </div>
+          )}
+        </div>
+      </div>
 
+    <div style={{ overflowX: 'auto' }}>
       {/* ── Bottom action bar ── */}
       {selected.size > 0 && (
         <div style={{ position: 'fixed', bottom: 28, left: '50%', transform: 'translateX(-50%)', background: '#1a1a2e', color: 'white', borderRadius: 12, padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 8px 32px rgba(0,0,0,0.28)', zIndex: 300, whiteSpace: 'nowrap' }}>
@@ -460,6 +520,7 @@ export default function DraftingBoard({ cards, setCards }) {
           />
         </>
       )}
+    </div>
     </div>
   )
 }

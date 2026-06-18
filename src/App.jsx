@@ -36,8 +36,51 @@ export default function App() {
 
   const project = PROJECTS.find(p => p.id === activeProject)
 
+  const switchProject = (id) => {
+    setActiveProject(id)
+    setActiveRole(null)
+  }
+
   return (
-    <div style={{ padding: '24px 32px', fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' }}>
+    <div style={{ fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' }}>
+
+      {/* Project switcher bar — only shown when inside a project */}
+      {activeProject !== null && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 4,
+          padding: '8px 32px', borderBottom: '0.5px solid #e0dfd8',
+          background: 'white', overflowX: 'auto',
+          position: 'sticky', top: 0, zIndex: 50,
+          boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+        }}>
+          <span style={{ fontSize: 11, color: '#aaa', fontWeight: 500, marginRight: 8, whiteSpace: 'nowrap' }}>Projects:</span>
+          {PROJECTS.map(p => (
+            <button
+              key={p.id}
+              onClick={() => switchProject(p.id)}
+              style={{
+                padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer',
+                fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap',
+                background: activeProject === p.id ? p.color : '#f0efe9',
+                color: activeProject === p.id ? 'white' : '#555',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { if (activeProject !== p.id) e.currentTarget.style.background = '#e0dfd8' }}
+              onMouseLeave={e => { if (activeProject !== p.id) e.currentTarget.style.background = '#f0efe9' }}
+            >
+              {p.name}
+            </button>
+          ))}
+          <button
+            onClick={() => { setActiveProject(null); setActiveRole(null) }}
+            style={{ marginLeft: 'auto', padding: '5px 14px', borderRadius: 20, border: '0.5px solid #e0dfd8', cursor: 'pointer', fontSize: 12, color: '#888', background: 'white', whiteSpace: 'nowrap' }}
+          >
+            ← All Projects
+          </button>
+        </div>
+      )}
+
+      <div style={{ padding: '24px 32px' }}>
       {activeProject === null ? (
         <ProjectsHome onSelect={(id) => { setActiveProject(id); setActiveRole(null) }} />
       ) : activeRole === null ? (
@@ -57,6 +100,7 @@ export default function App() {
           projectName={project?.name}
         />
       )}
+      </div>
     </div>
   )
 }
