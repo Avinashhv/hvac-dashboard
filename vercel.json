@@ -1,0 +1,9 @@
+{
+  "functions": {},
+  "middleware": [
+    {
+      "src": "/(.*)",
+      "use": "@vercel/edge-middleware"
+    }
+  ]
+}
