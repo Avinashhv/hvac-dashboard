@@ -5,6 +5,7 @@ import RolePage from './pages/RolePage'
 import { INITIAL_DATA } from './lib/data'
 import { getDefaultRoles } from './lib/defaultRoles'
 import { PROJECTS } from './lib/projects'
+import { ChevronLeft, ChevronRight, LayoutGrid, Home } from 'lucide-react'
 
 function initAllProjects() {
   const all = {}
@@ -14,10 +15,13 @@ function initAllProjects() {
   return all
 }
 
+const ROLE_LABELS = { pm: 'Project Management', eng: 'Engineering', draft: 'Drafting', site: 'Site' }
+
 export default function App() {
   const [activeProject, setActiveProject] = useState(null)
   const [activeRole, setActiveRole] = useState(null)
   const [allData, setAllData] = useState(initAllProjects)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
 
   const rolesData = activeProject ? allData[activeProject] : null
 
@@ -36,70 +40,145 @@ export default function App() {
 
   const project = PROJECTS.find(p => p.id === activeProject)
 
-  const switchProject = (id) => {
-    setActiveProject(id)
-    setActiveRole(null)
-  }
+  const switchProject = (id) => { setActiveProject(id); setActiveRole(null) }
+
+  const SIDEBAR_W = sidebarOpen ? 220 : 52
 
   return (
-    <div style={{ fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' }}>
 
-      {/* Project switcher bar — only shown when inside a project */}
-      {activeProject !== null && (
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 4,
-          padding: '8px 32px', borderBottom: '0.5px solid #e0dfd8',
-          background: 'white', overflowX: 'auto',
-          position: 'sticky', top: 0, zIndex: 50,
-          boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-        }}>
-          <span style={{ fontSize: 11, color: '#aaa', fontWeight: 500, marginRight: 8, whiteSpace: 'nowrap' }}>Projects:</span>
-          {PROJECTS.map(p => (
-            <button
-              key={p.id}
-              onClick={() => switchProject(p.id)}
-              style={{
-                padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer',
-                fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap',
-                background: activeProject === p.id ? p.color : '#f0efe9',
-                color: activeProject === p.id ? 'white' : '#555',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => { if (activeProject !== p.id) e.currentTarget.style.background = '#e0dfd8' }}
-              onMouseLeave={e => { if (activeProject !== p.id) e.currentTarget.style.background = '#f0efe9' }}
-            >
-              {p.name}
-            </button>
-          ))}
-          <button
-            onClick={() => { setActiveProject(null); setActiveRole(null) }}
-            style={{ marginLeft: 'auto', padding: '5px 14px', borderRadius: 20, border: '0.5px solid #e0dfd8', cursor: 'pointer', fontSize: 12, color: '#888', background: 'white', whiteSpace: 'nowrap' }}
-          >
-            ← All Projects
+      {/* ── Sidebar ── */}
+      <div style={{
+        width: SIDEBAR_W, flexShrink: 0, background: '#1f1f2e',
+        display: 'flex', flexDirection: 'column',
+        position: 'sticky', top: 0, height: '100vh',
+        transition: 'width 0.2s ease', overflow: 'hidden',
+        borderRight: '1px solid rgba(255,255,255,0.07)',
+      }}>
+        {/* Logo / toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'space-between' : 'center', padding: '16px 12px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          {sidebarOpen && (
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'white', letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
+              D&amp;E Group
+            </span>
+          )}
+          <button onClick={() => setSidebarOpen(o => !o)}
+            style={{ background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 6, cursor: 'pointer', color: '#aaa', padding: 6, display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            {sidebarOpen ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
           </button>
         </div>
-      )}
 
-      <div style={{ padding: '24px 32px' }}>
-      {activeProject === null ? (
-        <ProjectsHome onSelect={(id) => { setActiveProject(id); setActiveRole(null) }} />
-      ) : activeRole === null ? (
-        <MainPage
-          project={project}
-          rolesData={rolesData}
-          onSelect={setActiveRole}
-          onBack={() => setActiveProject(null)}
-        />
-      ) : (
-        <RolePage
-          roleKey={activeRole}
-          roleData={rolesData[activeRole]}
-          cards={rolesData[activeRole].cards}
-          setCards={setCards(activeRole)}
-          onBack={() => setActiveRole(null)}
-          projectName={project?.name}
-        />
-      )}
+        {/* Home */}
+        <button
+          onClick={() => { setActiveProject(null); setActiveRole(null) }}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
+            background: activeProject === null ? 'rgba(255,255,255,0.1)' : 'none',
+            border: 'none', cursor: 'pointer', color: activeProject === null ? 'white' : '#aaa',
+            width: '100%', textAlign: 'left', borderRadius: 0,
+          }}
+          onMouseEnter={e => { if (activeProject !== null) e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
+          onMouseLeave={e => { if (activeProject !== null) e.currentTarget.style.background = 'none' }}
+        >
+          <Home size={15} style={{ flexShrink: 0 }} />
+          {sidebarOpen && <span style={{ fontSize: 13, whiteSpace: 'nowrap' }}>All Projects</span>}
+        </button>
+
+        {/* Divider + label */}
+        {sidebarOpen && (
+          <div style={{ padding: '12px 14px 4px', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            Workspace
+          </div>
+        )}
+
+        {/* Project list */}
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {PROJECTS.map(p => {
+            const isActive = activeProject === p.id
+            return (
+              <div key={p.id}>
+                {/* Project row */}
+                <button
+                  onClick={() => switchProject(p.id)}
+                  title={p.name}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: sidebarOpen ? '9px 14px' : '9px 0', justifyContent: sidebarOpen ? 'flex-start' : 'center',
+                    background: isActive ? 'rgba(255,255,255,0.12)' : 'none',
+                    border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left',
+                    borderLeft: isActive ? `3px solid ${p.color}` : '3px solid transparent',
+                  }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'none' }}
+                >
+                  {/* colour dot */}
+                  <div style={{ width: 22, height: 22, borderRadius: 5, background: p.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 10, fontWeight: 700, color: 'white' }}>
+                    {p.name.charAt(0)}
+                  </div>
+                  {sidebarOpen && (
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: isActive ? 'white' : '#ccc', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 150 }}>{p.name}</div>
+                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', whiteSpace: 'nowrap' }}>{p.jobNumber}</div>
+                    </div>
+                  )}
+                </button>
+
+                {/* Role sub-items — only shown when this project is active and sidebar is open */}
+                {isActive && sidebarOpen && (
+                  <div style={{ paddingLeft: 36 }}>
+                    {['pm', 'eng', 'draft', 'site'].map(role => (
+                      <button key={role} onClick={() => setActiveRole(role)}
+                        style={{
+                          display: 'block', width: '100%', textAlign: 'left', padding: '6px 12px',
+                          background: activeRole === role ? 'rgba(255,255,255,0.08)' : 'none',
+                          border: 'none', cursor: 'pointer', fontSize: 11,
+                          color: activeRole === role ? 'white' : 'rgba(255,255,255,0.45)',
+                          borderRadius: 4,
+                        }}
+                        onMouseEnter={e => { if (activeRole !== role) e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
+                        onMouseLeave={e => { if (activeRole !== role) e.currentTarget.style.color = 'rgba(255,255,255,0.45)' }}
+                      >
+                        {ROLE_LABELS[role]}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Footer */}
+        {sidebarOpen && (
+          <div style={{ padding: '12px 14px', borderTop: '1px solid rgba(255,255,255,0.07)', fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>
+            Mechanical Services — D&amp;E Group
+          </div>
+        )}
+      </div>
+
+      {/* ── Main content ── */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '24px 32px', flex: 1 }}>
+          {activeProject === null ? (
+            <ProjectsHome onSelect={(id) => { setActiveProject(id); setActiveRole(null) }} />
+          ) : activeRole === null ? (
+            <MainPage
+              project={project}
+              rolesData={rolesData}
+              onSelect={setActiveRole}
+              onBack={() => setActiveProject(null)}
+            />
+          ) : (
+            <RolePage
+              roleKey={activeRole}
+              roleData={rolesData[activeRole]}
+              cards={rolesData[activeRole].cards}
+              setCards={setCards(activeRole)}
+              onBack={() => setActiveRole(null)}
+              projectName={project?.name}
+            />
+          )}
+        </div>
       </div>
     </div>
   )
