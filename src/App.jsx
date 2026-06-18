@@ -37,7 +37,7 @@ export default function App() {
   const project = PROJECTS.find(p => p.id === activeProject)
 
   return (
-    <div style={{ maxWidth: 1600, margin: '0 auto', padding: '24px 32px', fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' }}>
+    <div style={{ padding: '24px 32px', fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif' }}>
       {activeProject === null ? (
         <ProjectsHome onSelect={(id) => { setActiveProject(id); setActiveRole(null) }} />
       ) : activeRole === null ? (
