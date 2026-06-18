@@ -127,7 +127,7 @@ function InlineEdit({ value, onChange, placeholder = '' }) {
   return (
     <span
       onClick={() => setEditing(true)}
-      style={{ fontSize: 12, color: value ? '#1a1a1a' : '#bbb', cursor: 'text', display: 'block', minHeight: 20 }}
+      style={{ fontSize: 12, color: value ? '#1a1a1a' : '#bbb', cursor: 'text', display: 'block', minHeight: 20, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
     >
       {value || placeholder}
     </span>
@@ -223,7 +223,7 @@ export default function DraftingBoard({ cards, setCards }) {
                 <div style={{ width: 4, height: '100%', background: GROUP_COLORS[group], borderRadius: '2px 0 0 2px', alignSelf: 'stretch' }} />
 
                 {/* Task title */}
-                <div style={{ padding: '6px 8px' }}>
+                <div style={{ padding: '6px 8px', overflow: 'hidden' }}>
                   <InlineEdit value={card.title} onChange={v => update(card.id, 'title', v)} placeholder="Task name..." />
                 </div>
 
