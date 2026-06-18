@@ -214,8 +214,6 @@ export default function DraftingBoard({ cards, setCards }) {
   const migrated = migrate(cards)
 
   /* grid template from current column order */
-  const gridCols = `28px 28px ${colOrder.map(k => allColDefs[k]?.width || '120px').join(' ')} 28px`
-
   /* render a single cell for a given column key */
   const renderCell = (key, card) => {
     switch (key) {
@@ -266,6 +264,7 @@ export default function DraftingBoard({ cards, setCards }) {
 
   /* merged column definitions (built-in + custom) */
   const allColDefs = { ...COL_DEF, ...customCols }
+  const gridCols = `28px 28px ${colOrder.map(k => allColDefs[k]?.width || '120px').join(' ')} 28px`
 
   return (
     <div>
