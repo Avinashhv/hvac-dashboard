@@ -21,7 +21,7 @@ const GROUP_COLORS = { 'To-Do': '#7F77DD', 'Waiting for Information': '#FDAB3D',
 const DEFAULT_COL_ORDER = ['title', 'owner', 'status', 'due', 'priority', 'notes', 'category', 'timeline']
 const COL_DEF = {
   title:    { label: 'Task',               width: '2fr'  },
-  owner:    { label: 'Responsible Person', width: '110px' },
+  owner:    { label: 'Draftee', width: '110px' },
   status:   { label: 'Status',             width: '140px' },
   due:      { label: 'Due Date',           width: '100px' },
   priority: { label: 'Priority',           width: '100px' },
