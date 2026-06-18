@@ -6,7 +6,7 @@ export default function RolePage({ roleKey, roleData, onBack, cards, setCards, p
   const { label, owner, color, textColor, metrics, progress } = roleData
 
   return (
-    <div style={{ padding: '0.9rem 0' }}>
+    <div style={{ padding: '0.9rem 0', width: '100%', boxSizing: 'border-box' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
         <button

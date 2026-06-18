@@ -267,13 +267,14 @@ export default function DraftingBoard({ cards, setCards }) {
   const gridCols = `28px 28px ${colOrder.map(k => allColDefs[k]?.width || '120px').join(' ')} 28px`
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       {/* ── Global sticky header (outside overflow so sticky works) ── */}
       <div style={{
         display: 'grid', gridTemplateColumns: gridCols,
         position: 'sticky', top: 0, zIndex: 20,
         background: 'white', borderBottom: '1.5px solid #e0dfd8',
         boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+        width: '100%',
       }}>
         <div /><div />
         {colOrder.map((key, ci) => (
@@ -328,7 +329,7 @@ export default function DraftingBoard({ cards, setCards }) {
         </div>
       </div>
 
-    <div style={{ overflowX: 'auto' }}>
+    <div style={{ overflowX: 'auto', width: '100%' }}>
       {/* ── Bottom action bar ── */}
       {selected.size > 0 && (
         <div style={{ position: 'fixed', bottom: 28, left: '50%', transform: 'translateX(-50%)', background: '#1a1a2e', color: 'white', borderRadius: 12, padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 8px 32px rgba(0,0,0,0.28)', zIndex: 300, whiteSpace: 'nowrap' }}>
