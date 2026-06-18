@@ -2,10 +2,11 @@ import { useState } from 'react'
 import ProjectsHome from './pages/ProjectsHome'
 import MainPage from './pages/MainPage'
 import RolePage from './pages/RolePage'
+import LoginPage from './pages/LoginPage'
 import { INITIAL_DATA } from './lib/data'
 import { getDefaultRoles } from './lib/defaultRoles'
 import { PROJECTS } from './lib/projects'
-import { ChevronLeft, ChevronRight, LayoutGrid, Home } from 'lucide-react'
+import { ChevronLeft, ChevronRight, LayoutGrid, Home, LogOut } from 'lucide-react'
 
 function initAllProjects() {
   const all = {}
@@ -18,10 +19,17 @@ function initAllProjects() {
 const ROLE_LABELS = { pm: 'Project Management', eng: 'Engineering', draft: 'Drafting', site: 'Site' }
 
 export default function App() {
+  const [loggedIn, setLoggedIn] = useState(() => sessionStorage.getItem('de_auth') === '1')
   const [activeProject, setActiveProject] = useState(null)
   const [activeRole, setActiveRole] = useState(null)
   const [allData, setAllData] = useState(initAllProjects)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+
+  if (!loggedIn) {
+    return <LoginPage onLogin={() => { sessionStorage.setItem('de_auth', '1'); setLoggedIn(true) }} />
+  }
+
+  const handleLogout = () => { sessionStorage.removeItem('de_auth'); setLoggedIn(false) }
 
   const rolesData = activeProject ? allData[activeProject] : null
 
@@ -151,11 +159,15 @@ export default function App() {
         </div>
 
         {/* Footer */}
-        {sidebarOpen && (
-          <div style={{ padding: '12px 14px', borderTop: '1px solid rgba(255,255,255,0.07)', fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>
-            Mechanical Services — D&amp;E Group
-          </div>
-        )}
+        <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'space-between' : 'center' }}>
+          {sidebarOpen && <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>Mechanical Services — D&amp;E Group</span>}
+          <button onClick={handleLogout} title="Sign out"
+            style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 6, cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: 6, display: 'flex', alignItems: 'center' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(226,68,92,0.2)'; e.currentTarget.style.color = '#E2445C' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}>
+            <LogOut size={13} />
+          </button>
+        </div>
       </div>}
 
       {/* ── Main content ── */}
