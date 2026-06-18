@@ -33,6 +33,7 @@ export default function App() {
   const [activeProject, setActiveProject] = useState(null)
   const [activeRole, setActiveRole] = useState(null)
   const [allData, setAllData] = useState(initAllProjects)
+  const [extraProjects, setExtraProjects] = useState([])
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   if (!loggedIn) {
@@ -40,6 +41,21 @@ export default function App() {
   }
 
   const handleLogout = () => { sessionStorage.removeItem('de_auth'); setLoggedIn(false) }
+
+  const allProjects = [...PROJECTS, ...extraProjects]
+
+  const handleAddProject = ({ name, jobNumber, address, type, color }) => {
+    const id = `proj_${Date.now()}`
+    const newProject = {
+      id, name, jobNumber, address, type, color,
+      image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80',
+    }
+    setExtraProjects(prev => [...prev, newProject])
+    const roles = getDefaultRoles(name)
+    setAllData(prev => ({ ...prev, [id]: roles }))
+    setActiveProject(id)
+    setActiveRole(null)
+  }
 
   const rolesData = activeProject ? allData[activeProject] : null
 
@@ -56,7 +72,7 @@ export default function App() {
     }))
   }
 
-  const project = PROJECTS.find(p => p.id === activeProject)
+  const project = allProjects.find(p => p.id === activeProject)
 
   const switchProject = (id) => { setActiveProject(id); setActiveRole(null) }
 
@@ -113,7 +129,7 @@ export default function App() {
 
         {/* Project list */}
         <div style={{ flex: 1, overflowY: 'auto' }}>
-          {PROJECTS.map(p => {
+          {allProjects.filter(p => !p.isTemplate).map(p => {
             const isActive = activeProject === p.id
             return (
               <div key={p.id}>
@@ -184,7 +200,7 @@ export default function App() {
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'auto', height: '100vh' }}>
         <div style={{ padding: activeRole ? '16px 20px' : '24px 32px', flex: 1, width: '100%', boxSizing: 'border-box' }}>
           {activeProject === null ? (
-            <ProjectsHome onSelect={(id) => { setActiveProject(id); setActiveRole(null) }} />
+            <ProjectsHome onSelect={(id) => { setActiveProject(id); setActiveRole(null) }} onAddProject={handleAddProject} />
           ) : activeRole === null ? (
             <MainPage
               project={project}
