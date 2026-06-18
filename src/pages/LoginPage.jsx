@@ -1,20 +1,34 @@
 import { useState } from 'react'
 
-const VALID_USER = 'admin'
-const VALID_PASS = 'admin'
-
 export default function LoginPage({ onLogin }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (username === VALID_USER && password === VALID_PASS) {
-      onLogin()
-    } else {
-      setError('Incorrect username or password.')
-      setPassword('')
+    setLoading(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      })
+
+      if (res.ok) {
+        onLogin()
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.message || 'Incorrect username or password.')
+        setPassword('')
+      }
+    } catch {
+      setError('Unable to connect. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -27,7 +41,7 @@ export default function LoginPage({ onLogin }) {
         background: 'white', borderRadius: 16, padding: '40px 36px',
         boxShadow: '0 4px 32px rgba(0,0,0,0.10)', width: 340,
       }}>
-        {/* Logo area */}
+        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{
             width: 48, height: 48, borderRadius: 12, background: '#1f1f2e',
@@ -49,6 +63,7 @@ export default function LoginPage({ onLogin }) {
               onChange={e => { setUsername(e.target.value); setError('') }}
               placeholder="Enter username"
               autoFocus
+              required
               style={{
                 width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 13,
                 border: '1px solid #e0dfd8', outline: 'none', boxSizing: 'border-box',
@@ -68,6 +83,7 @@ export default function LoginPage({ onLogin }) {
               value={password}
               onChange={e => { setPassword(e.target.value); setError('') }}
               placeholder="Enter password"
+              required
               style={{
                 width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 13,
                 border: '1px solid #e0dfd8', outline: 'none', boxSizing: 'border-box',
@@ -84,15 +100,15 @@ export default function LoginPage({ onLogin }) {
             </div>
           )}
 
-          <button type="submit" style={{
+          <button type="submit" disabled={loading} style={{
             width: '100%', padding: '11px', borderRadius: 8, border: 'none',
-            background: '#1f1f2e', color: 'white', fontSize: 13, fontWeight: 600,
-            cursor: 'pointer', letterSpacing: '0.02em',
+            background: loading ? '#aaa' : '#1f1f2e', color: 'white', fontSize: 13, fontWeight: 600,
+            cursor: loading ? 'not-allowed' : 'pointer', letterSpacing: '0.02em',
           }}
-            onMouseEnter={e => e.currentTarget.style.background = '#7F77DD'}
-            onMouseLeave={e => e.currentTarget.style.background = '#1f1f2e'}
+            onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#7F77DD' }}
+            onMouseLeave={e => { if (!loading) e.currentTarget.style.background = '#1f1f2e' }}
           >
-            Sign In
+            {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
       </div>
