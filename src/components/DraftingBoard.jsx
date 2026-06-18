@@ -235,6 +235,7 @@ export default function DraftingBoard({ cards, setCards }) {
         gridTemplateColumns: '28px 28px 2fr 80px 140px 100px 100px 2fr 110px 170px 28px',
         gap: 0, borderBottom: '1.5px solid #e0dfd8',
         padding: '0 0 6px 0', marginBottom: 0,
+        position: 'sticky', top: 0, zIndex: 10, background: 'white',
       }}>
         {['', '', 'Task', 'Responsible Person', 'Status', 'Due date', 'Priority', 'Notes', 'Category', 'Timeline', ''].map((h, i) => (
           <div key={i} style={{ fontSize: 11, fontWeight: 500, color: '#aaa', padding: '0 8px' }}>{h}</div>
